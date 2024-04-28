@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imageshala</title>
+    <link rel="stylesheet" href="../public/style.css">
+</head>
+<body>
+    <header class="header">
+        <a href="/">
+            <img src="../public/assets/logo.svg" class="logo"/>
+        </a>
+        
+        <nav>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        </nav>
+    </header>
+    <form action="#" method="post"class="login" onSubmit="handleLogin(event)">
+        <h1>Login</h1>
+        <input type="text" placeholder=" Enter username" name="username" id="username"/>
+        <input type="password" placeholder="Enter password" name="password" id="password"/>
+        <input type="submit" value="Login">
+    </form>
+
+
+    <script>
+        function handleLogin(event) {
+          event.preventDefault(); // Prevent default form submission
+        
+          const username = document.getElementById('username').value;
+          const password = document.getElementById('password').value;
+        
+          fetch('/loginpost', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+          })
+          .then(response => {
+            if (response.ok) {
+              // Handle successful login and registration confirmation
+              alert('LoggedIn successfuly!');
+               // Replace with your desired behavior
+                window.location.href = '/home';
+            } else {
+              response.text().then(errorText => {
+                alert(`Login failed: ${errorText}`); // Display error message from server
+              });
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred during login. Please try again later.');
+          });
+        }
+        </script>
+</body>
+</html>

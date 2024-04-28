@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Imageshala</title>
+    <link rel="stylesheet" href="../public/style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <a href="/">
+        <img src="../public/assets/logo.svg" class="logo" />
+      </a>
+      <nav>
+        <a href="/logout">Logout</a>
+        <a href="/home">Home</a>
+      </nav>
+    </header>
+    <main class="flexAllItems">
+      
+      <h1 class="heading">Images shared by the community</h1>
+      <div id="containAllCards">
+          
+      </div>
+    </main>
+    <script>
+      document.body.onload=async()=>{
+        try{
+            // console.log("HELLO");
+            const response= await fetch('/showImages',{
+              method:'POST'
+          })
+          
+          
+          const {result}=await response.json();
+          result.forEach(element => {
+            const div=document.createElement('div');
+            const div2=document.createElement('div');
+            div2.innerHTML="Prompt: "+element.prompt;
+            div.classList.add('image_card');
+            const img=document.createElement('img');
+            img.src=element.imagelink;
+            img.alt="preview";
+            div.appendChild(img);
+            div.appendChild(div2);
+            document.getElementById('containAllCards').appendChild(div);
+          });
+          
+        }
+        catch(err){
+          console.log(err)
+        }
+      }
+    </script>
+  </body>
+</html>

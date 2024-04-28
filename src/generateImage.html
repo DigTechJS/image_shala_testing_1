@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Imageshala</title>
+    <link rel="stylesheet" href="../public/style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <a href="/">
+        <img src="../public/assets/logo.svg" class="logo" />
+      </a>
+      <nav>
+        <a href="/logout">Logout</a>
+        <a href="/home">Home</a>
+        <!-- <a href="/library">Library</a> -->
+
+        <!-- <a href="/register">Register</a> -->
+      </nav>
+    </header>
+    <main class="flexAllItems">
+      <div class="container3">
+        <h1 class="heading">Generate Image</h1>
+      </div>
+      <div class="card" style="background-color: white">
+        <img
+          id="generateImage"
+          src="../public/assets/preview.png"
+          alt="preview"
+        />
+      </div>
+      <div class="container3">
+        <form
+          class="generateImage"
+          action="#"
+          method="post"
+          onSubmit="genImg(event)"
+        >
+          <input
+            type="text"
+            name="text"
+            id="text"
+            placeholder="Enter Prompt"
+            size="400"
+            required
+          />
+          <button class="button" type="submit">Generate</button>
+        </form>
+      </div>
+      <div style="font-size: 2rem" id="imgGenerate"></div>
+      <button class="button" id="btn">Download Image</button>
+      <button class="button" id="btn2" onclick="shareCommunity()">
+        Share with the community
+      </button>
+      <button class="button"><a href="/community">Check photos in community</a></button>
+    </main>
+
+    <script>
+      
+
+      async function shareCommunity(){
+        const text = document.getElementById("text").value;
+        
+        
+        try {
+          const res = await fetch("/shareCommunity", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt: text }),
+          });
+          if(res.ok){
+            document.getElementById("imgGenerate").innerHTML ="Shared with the community🤗";
+          }
+          else{
+            throw new Error("Failed to share with the community");
+          }
+          
+        } catch (error) {
+          document.getElementById("imgGenerate").innerHTML ="Error sharing with the community";
+        }
+      }
+
+      async function genImg(event) {
+        event.preventDefault();
+        document.getElementById("generateImage").src ="../public/assets/preview.png";
+        document.getElementById("imgGenerate").innerHTML ="Generating Image...";
+        const text = document.getElementById("text").value;
+        const form = new FormData();
+        form.append("prompt", text);
+
+        try {
+          const res = await fetch("/generateImage", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt: text }),
+          });
+          if(res.ok){
+            
+              document.getElementById("generateImage").src =
+              "../public/images/image.jpg";
+            document.getElementById("imgGenerate").innerHTML ="Image Generated Successfully🤗";
+            document.getElementById('btn').addEventListener('click', () => {
+               downloadImage("../public/images/image.jpg");
+            })
+          }
+          else{
+            throw new Error("Failed to generate image");
+          }
+          
+        } catch (error) {
+          console.error("Error fetching image:", error);
+        }
+      }
+
+      // // async function saveImageToDirectory(imageUrl, directoryPath) {
+      //   return new Promise((resolve, reject) => {
+      //     https
+      //       .get(imageUrl, (response) => {
+      //         if (response.statusCode === 200) {
+      //           const fileStream = fs.createWriteStream(directoryPath);
+      //           response.pipe(fileStream);
+      //           fileStream.on("finish", () =>
+      //             resolve("Image saved successfully")
+      //           );
+      //         } else {
+      //           reject(
+      //             new Error(`Failed to download image: ${response.statusCode}`)
+      //           );
+      //         }
+      //       })
+      //       .on("error", reject);
+      //   });
+      // }
+      
+      
+      async function downloadImage(imageSrc) {
+        const response = await fetch(imageSrc);
+        console.log(response);
+        const blobImage = await response.blob();
+        const href = URL.createObjectURL(blobImage);
+        // await saveImageToDirectory(href, "../public/images/img.jpg");
+        const anchorElement = document.createElement("a");
+        anchorElement.href = href;
+        anchorElement.download = "img.jpg";
+
+        document.body.appendChild(anchorElement);
+        anchorElement.click();
+
+        document.body.removeChild(anchorElement);
+        window.URL.revokeObjectURL(href);
+      }
+    </script>
+  </body>
+</html>

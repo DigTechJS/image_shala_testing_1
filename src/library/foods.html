@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foods Images</title>
+    <link rel="stylesheet" href="../../public/style.css">
+</head>
+<body>
+    <header class="header">
+        <a href="/">
+            <img src="../public/assets/logo.svg" class="logo"/>
+        </a>
+        
+        <nav>
+            <a href="/logout">Logout</a>
+            <a href="/library">Library</a>
+        </nav>
+    </header>
+    <main class="flexAllItems">
+        <div class="card">
+            <img src="../../public/assets/library/foods/img1.jpeg" alt="Img1">
+            <button onClick="downloadImage(`../../public/assets/library/foods/img1.jpeg`)" class="img1" id="button">Click To Download</button>
+        </div>
+        <div class="card">
+            <img src="../../public/assets/library/foods/img2.jpeg" alt="Img2">
+            <button onClick="downloadImage(`../../public/assets/library/foods/img2.jpeg`)" class="img2" id="button">Click To Download</button>
+        </div>
+        <div class="card">
+            <img src="../../public/assets/library/foods/img3.jpeg" alt="Img3">
+            <button onClick="downloadImage(`../../public/assets/library/foods/img3.jpeg`)" class="img3" id="button">Click To Download</button>
+        </div>
+        <div class="card">
+            <img src="../../public/assets/library/foods/img4.jpeg" alt="Img4">
+            <button onClick="downloadImage(`../../public/assets/library/foods/img4.jpeg`)" class="img4" id="button">Click To Download</button>
+        </div>
+        <div class="card">
+            <img src="../../public/assets/library/foods/img5.jpeg" alt="Img5">
+            <button onClick="downloadImage(`../../public/assets/library/foods/img5.jpeg`)" class="img5" id="button">Click To Download</button>
+        </div>
+        
+    </main>
+    
+</body>
+<script>
+    async function downloadImage(imageSrc) {
+    const response = await fetch(imageSrc);
+    console.log(response);
+    const blobImage = await response.blob();
+
+    const href = URL.createObjectURL(blobImage);
+
+    const anchorElement = document.createElement('a');
+    anchorElement.href = href;
+    anchorElement.download = 'img.jpg';
+
+    document.body.appendChild(anchorElement);
+    anchorElement.click();
+
+    document.body.removeChild(anchorElement);
+    window.URL.revokeObjectURL(href);
+    }
+    
+</script>
+
+</html>

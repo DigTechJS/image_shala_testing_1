@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imageshala</title>
+    <link rel="stylesheet" href="../public/style.css"/>
+</head>
+<body class="">
+    <header class="header">
+        <a href="/">
+          <img src="../public/assets/logo.svg" class="logo" />
+        </a>
+        <nav>
+          <a href="/logout">Logout</a>
+          <a href="/home">Home</a>
+        </nav>
+      </header>
+      <main class="flexAllItems">
+        <h1 class="heading">Share your AI generated images with the community</h1>
+        <form action="#" method="post" onSubmit="getData(event)" class="saveImages">
+            <input type="text" name="prompt" id="prompt" placeholder="Enter the prompt" required>
+            <input type="file" name="image" id="image" required>
+            <input type="submit" value="Share with community" class="btn">
+        </form>
+      </main>
+    <script>
+        async function getData(event){
+            event.preventDefault();
+            const prompt = document.getElementById('prompt').value;
+            const image = document.getElementById('image').files[0];
+            const formData = new FormData();
+            formData.append('prompt', prompt);
+            formData.append('image', image);
+            const response = await fetch('/saveImages', {
+                method: 'POST',
+                body: formData
+            });
+            if(response.ok){
+                alert('Image shared successfully');
+            }else{
+                alert('Image sharing failed');
+            }
+        }
+    
+    </script>
+</body>
+</html>

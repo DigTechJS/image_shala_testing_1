@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imageshala</title>
+    <link rel="stylesheet" href="../public/style.css"/>
+</head>
+<body class="">
+    <header class="header">
+        <a href="/">
+          <img src="../public/assets/logo.svg" class="logo" />
+        </a>
+        <nav>
+          <a href="/logout">Logout</a>
+          <a href="/home">Home</a>
+        </nav>
+      </header>
+      <main class="flexAllItems">
+        <h1 class="heading">Please share your feedback</h1>
+        <form action="#" method="POST" onSubmit="sendData(event)" class="saveImages">
+            <input type="text" name="name" id="name" placeholder="Enter your name" required>
+            <input type="text" name="email" id="email" placeholder="Enter your email" required>
+            <input type="tel" id="phone" name="phone" placeholder="Enter your phone" required >
+            <input type="text" name="feedbackmessage" id="feedbackmessage" placeholder="Please share your feedback with us" required>
+            <label style="background-color:white;font-size:1rem;" for="rating">Rating </label>
+            <select name="rating" id="rating">
+              <option value=1>1</option>
+              <option value=2 >2</option>
+              <option value=3>3</option>
+              <option value=4>4</option>
+              <option value=5 selected>5</option>
+            </select>
+            <input type="submit" value="Submit" class="btn">
+        </form>
+      </main>
+    <script>
+        async function sendData(event){
+          event.preventDefault();
+          console.log("sendData")
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone= document.getElementById('phone').value;
+            console.log(phone)
+            console.log(name)
+            console.log(email)
+            const feedbackmessage = document.getElementById('feedbackmessage').value;
+            const rating = document.getElementById('rating').value;
+            const response = await fetch('/saveFeedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({name, email,phone, feedbackmessage,rating})
+            });
+            if(response.ok){
+              alert("Your feedback has been saved successfully")
+            }
+            else{
+              console.log(response)
+              alert("Your feedback could not be saved. Please try again later")
+            }
+        }
+    
+    </script>
+</body>
+</html>

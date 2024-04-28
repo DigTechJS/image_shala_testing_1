@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Imageshala</title>
+    <link rel="stylesheet" href="../public/style.css" />
+  </head>
+  <body class="">
+    <header class="header">
+      <a href="/">
+        <img src="../public/assets/logo.svg" class="logo" />
+      </a>
+      <nav>
+        <a href="/logout">Logout</a>
+        <a href="/home">Home</a>
+      </nav>
+    </header>
+    <main class="flexAllItems">
+      <h1 class="heading">Look what others think of us?</h1>
+      <h2 id="avgRating"></h2>
+      <div id="containAllFeedbacks">
+            
+      </div>
+    </main>
+    <script>
+        document.body.onload=async()=>{
+            try{
+                const res=await fetch('/sendFeedbacks',{
+                    method:'POST'
+                })
+                const {result}=await res.json();
+                let cnt=0;
+                let totalRating=0;
+                // console.log(result)
+                result.forEach(element => {
+                    const feedbackCard=document.createElement('div');
+                    feedbackCard.classList.add('feedbackCard');
+                    const name=document.createElement('h4');
+                    name.innerHTML=element.name;
+                    const feedback=document.createElement('p');
+                    feedback.innerHTML=element.feedbackmessage;
+                    const rating=Number(element.rating);
+                    totalRating+=rating;
+                    cnt++;
+                    const containstars=document.createElement('div');
+
+                    createStars(rating,containstars);
+                    feedbackCard.appendChild(name);
+                    feedbackCard.appendChild(feedback);
+                    feedbackCard.appendChild(containstars);
+                    const avgRating=(totalRating*1.0)/cnt;
+                    document.getElementById('avgRating').innerHTML=`Our average rating is: ${avgRating.toFixed(2)}/5`;
+                    document.getElementById('avgRating').style.backgroundColor='white';
+                    document.getElementById('avgRating').style.padding='1rem';
+                    document.getElementById('avgRating').style.fontSize='1.5rem';
+
+                    document.getElementById('containAllFeedbacks').appendChild(feedbackCard);
+                });
+
+            }
+            catch(error){
+                document.getElementById('containAllFeedbacks').innerHTML="Due to some error, We are not able to show you feedbacks. Please try again later."
+            }
+        }
+
+        function createStars(numberOfStars,containstars){
+            
+            for(let i=0;i<numberOfStars;i++){
+                const img=document.createElement('img');
+                img.src='../public/assets/starsvg.svg';
+                img.alt='star';
+                img.style.width='50px';
+                containstars.appendChild(img)
+            }
+        }
+    </script>
+  </body>
+</html>
