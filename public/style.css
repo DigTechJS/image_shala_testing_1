@@ -76,14 +76,28 @@ body{
     border-radius: 10px;
   }
   
-  form.login,form.register, form.generateImage, form.saveImages{
+  form.login,form.register, form.generateImage{
     max-width: 500px;
     margin:2rem auto;
     
     
   
   }
-  form.login input, form.register input , form.generateImage input,form.saveImages input{
+  .saveImages{
+    width:700px;
+    padding:5rem auto;
+  }
+  .saveImages input{
+    width:500px;
+    margin:2rem;
+    
+  }
+  .saveImages select{
+    width:200px;
+    margin:2rem;
+  }
+
+  form.login input, form.register input , form.generateImage input,form.saveImages input,form.saveImages select,form.saveImages label{
   
     display: block;
     width:100%;
@@ -100,6 +114,7 @@ body{
     border:2px solid #080000;
     border-radius: 5px;
     color: #fff;
+    cursor:pointer;
   }
   #btn,#btn2{
     padding:5px;
@@ -117,6 +132,7 @@ body{
     border-radius: 5px;
     color: #fff;
     width:400px;
+    cursor:pointer;
   }
   form.login h1, form.register h1{
     text-align:center;

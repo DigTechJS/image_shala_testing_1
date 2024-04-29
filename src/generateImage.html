@@ -64,6 +64,7 @@
         
         
         try {
+          document.getElementById("imgGenerate").innerHTML ="Sharing with the community🤗";
           const res = await fetch("/shareCommunity", {
             method: "POST",
             headers: { "Content-Type": "application/json" },

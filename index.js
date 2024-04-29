@@ -300,7 +300,7 @@ app.post('/generateImage', async (req, res) => {
 
 app.post('/loginpost',async (req,res)=>{
     const {username, password}=req.body;
-  console.log(req.body);
+//   console.log(req.body);
   const findUser=await User.findOne({username})
   try {
     const pass=bcrypt.compareSync(password,findUser.password);
