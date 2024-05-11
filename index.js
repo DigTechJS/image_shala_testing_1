@@ -487,6 +487,6 @@ app.post('/saveImages',upload.single('image'), async (req,res)=>{
 
 
 
-app.listen(4000, ()=>{
-    console.log(`Server running on http://localhost:4000/`);
+app.listen(process.env.PORT, ()=>{
+    console.log(`Server running on https://image-shala-testing-1-66d37xqlc-shreya-jains-projects-2bce3126.vercel.app`);
 })
