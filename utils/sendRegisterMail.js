@@ -6,7 +6,7 @@ const transporter = nodemailer.createTransport({
     secure: false, // Use `true` for port 465, `false` for all other ports
     auth: {
       user: "imageshala123@gmail.com",
-      pass: "qary nvwg loyi koar",
+      pass: process.env.EMAIL_PASSWORD,
     },
   });
  async function sendRegisterMail(receiverAddress,uniqueString){
