@@ -20,38 +20,47 @@
     <form action="#" method="post" class="register" onsubmit="handleRegistration(event)" >
         <h1>Register</h1>
         <input type="text" placeholder="Enter username" name="username" id="username"/>
+        <input type="text" placeholder="Enter email" name="email" id="email"/>
         <input type="password" placeholder="Choose a password" name="password" id="password"/>
         <input type="submit" value="Register">
     </form>
 
-
     <script>
         function handleRegistration(event) {
-          event.preventDefault(); // Prevent default form submission
-        
-          const username = document.getElementById('username').value;
-          const password = document.getElementById('password').value;
-        
-          fetch('/registration', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password }),
-          })
-          .then(response => {
-            if (response.ok) {
-              // Handle successful login and registration confirmation
-              alert('Registration successful!'); // Replace with your desired behavior
-            } else {
-              response.text().then(errorText => {
-                alert(`Registration failed`); // Display error message from server
-              });
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            alert('An Registration occurred during login. Please try again later.');
-          });
-        }
+  event.preventDefault(); // Prevent default form submission
+
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  const email = document.getElementById('email').value;
+
+  // Validate username and password
+  if (username.trim() === "" || password.trim() === ""||email.trim()==="") {
+    alert('Please enter username,email and password.');
+    return; // Exit the function if empty fields are found
+  }
+
+  // Proceed with registration if fields are not empty
+  fetch('/registration', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password,email }),
+  })
+    .then(response => {
+      if (response.ok) {
+        // Handle successful login and registration confirmation
+        alert('Please verify email which we send you to your mailbox'); // Replace with your desired behavior
+      } else {
+        response.text().then(errorText => {
+          // console.log(response.);
+          alert(`Registration failed: ${errorText}`); // Display error message from server
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred during registration. Please try again later.');
+    });
+}
         </script>
 </body>
 </html>

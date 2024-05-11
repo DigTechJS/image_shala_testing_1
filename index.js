@@ -10,6 +10,9 @@ const fs=require('fs')
 const folderPath='./public/images/'
 const Feedback=require('./models/feedback.js')
 const salt = bcrypt.genSaltSync(10);
+const applyWatermark=require('./utils/applyWatermark.js')
+const randString=require('./utils/randomString.js')
+const sendRegisterMail=require('./utils/sendRegisterMail.js')
 let loggedIn=false;
 
 const cloudinary = require('cloudinary').v2;
@@ -37,8 +40,14 @@ const app=express();
 app.use('/public',express.static('public'))
 app.use(express.json())
 app.use(express.urlencoded()) 
+try{
+    connectDB();
+}
+catch(e){
+    console.log(e)
+    res.status(400).json(e);
+}
 
-connectDB();
 
 app.get('/', function(req, res) {
     res.status(200).sendFile(path.join(__dirname, '/src/index.html'));
@@ -228,14 +237,21 @@ app.get('/blogs/4', (req,res)=>{
 
 
 app.post('/registration',async (req,res)=>{
-    const {username,password}=req.body;
+    const {username,password,email}=req.body;
     // console.log(req.body.json())
     try{
+        const findUser=await User.findOne({username,email})
+        console.log(findUser);
+        if(findUser){
+            throw new Error("user already exist.")   
+        }
+        const uniqueString=randString(username);
+        const isValid=false;
         const myData=new User({
-            username, password:bcrypt.hashSync(password,salt)
+            username, password:bcrypt.hashSync(password,salt),email,uniqueString,isValid
         })
         await myData.save()
-          
+          sendRegisterMail(email,uniqueString);
           res.status(200).json(myData);
       }
       catch(e){
@@ -245,14 +261,34 @@ app.post('/registration',async (req,res)=>{
 })
 
 
+app.get('/verify/:uniqueString', async (req, res) => {  
+    //getting the string  
+    const { uniqueString } = req.params  
+    //check is there is anyone with this string  
+    const user = await User.findOne({ uniqueString: uniqueString })  
+    if (user) {  
+        //if there is anyone, mark them verified  
+        user.isValid = true  
+        await user.save()  
+        //redirect to the home or anywhere else  
+        res.redirect('/')  
+    } else {  
+        //else send an error message  
+        res.json('User not found')  
+    }  
+})
+
+
+
 app.post('/generateImage', async (req, res) => { 
-  const filePath = folderPath+'image.jpg';
+  const filePath1 = folderPath+'image.jpg';
+  const filePath2 = folderPath+'finalImage.jpg';
   const { prompt } = req.body;
   const form = new FormData();
   form.append('prompt', prompt);
 
   try {
-     fs.access(filePath, fs.constants.F_OK, (err) => {
+     fs.access(filePath1, fs.constants.F_OK, (err) => {
         if (err) {
             // File doesn't exist or you don't have permission to access it
             console.error('File does not exist or cannot be accessed.');
@@ -260,7 +296,7 @@ app.post('/generateImage', async (req, res) => {
         }
     
         // File exists, so delete it
-         fs.unlink(filePath, (err) => {
+         fs.unlink(filePath1, (err) => {
             if (err) {
                 console.error('Error deleting file:', err);
                 return;
@@ -275,14 +311,15 @@ app.post('/generateImage', async (req, res) => {
       },
       body: form,
     });
-
     if (!response.ok) {
-      throw new Error('Failed to fetch image');
+        throw new Error('Failed to fetch image');
     }
+    
+    
 
     const buffer = await response.arrayBuffer();
      
-     fs.writeFile(filePath, Buffer.from(buffer), (err) => {
+    await fs.writeFile(filePath1, Buffer.from(buffer), (err) => {
       if (err) {
         console.error('Error saving image:', err);
         res.status(500).json({ error: 'Error saving image' });
@@ -291,6 +328,13 @@ app.post('/generateImage', async (req, res) => {
         res.status(200).json({ message: 'Image saved successfully' });
       }
     });
+    // try{
+
+        await applyWatermark(filePath1,folderPath+'watermark.png',filePath2);
+    // }
+    // catch(e){
+    //     res.status(500).json({ error: 'Watermark can not be applied.' });
+    // }
   } catch (error) {
     console.error('Error fetching image:', error);
     res.status(500).json({ error: 'Error fetching image' });
@@ -302,11 +346,16 @@ app.post('/loginpost',async (req,res)=>{
     const {username, password}=req.body;
 //   console.log(req.body);
   const findUser=await User.findOne({username})
+
   try {
+    if(!findUser.isValid){
+        res.status(400).send('Please Verify email')
+        return;
+    }
     const pass=bcrypt.compareSync(password,findUser.password);
     if(pass){
       //loggedin
-      res.status(200).json('ok');
+      res.status(200).send('ok');
       loggedIn=true;
     }
     else{

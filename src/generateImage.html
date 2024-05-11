@@ -27,7 +27,7 @@
         <img
           id="generateImage"
           src="../public/assets/preview.png"
-          alt="preview"
+          alt="preview img"
         />
       </div>
       <div class="container3">
@@ -97,13 +97,10 @@
             body: JSON.stringify({ prompt: text }),
           });
           if(res.ok){
+            // public\images\finalImage.jpg
+            console.log("hii")
             
-              document.getElementById("generateImage").src =
-              "../public/images/image.jpg";
-            document.getElementById("imgGenerate").innerHTML ="Image Generated Successfully🤗";
-            document.getElementById('btn').addEventListener('click', () => {
-               downloadImage("../public/images/image.jpg");
-            })
+            await fetchImage();
           }
           else{
             throw new Error("Failed to generate image");
@@ -112,6 +109,7 @@
         } catch (error) {
           console.error("Error fetching image:", error);
         }
+        
       }
 
       // // async function saveImageToDirectory(imageUrl, directoryPath) {
@@ -150,6 +148,15 @@
 
         document.body.removeChild(anchorElement);
         window.URL.revokeObjectURL(href);
+      }
+
+       function fetchImage(){
+         document.getElementById("generateImage").src ="../public/images/image.jpg";
+              
+         document.getElementById("imgGenerate").innerHTML ="Image Generated Successfully🤗";
+         document.getElementById('btn').addEventListener('click', () => {
+               downloadImage("../public/images/finalImage.jpg");
+            })
       }
     </script>
   </body>
