@@ -37,7 +37,7 @@ const upload = multer({ storage: storage });
 
 const app=express();
 
-app.use('/public',express.static('public'))
+app.use('./public',express.static('public'))
 app.use(express.json())
 app.use(express.urlencoded()) 
 try{
@@ -487,6 +487,6 @@ app.post('/saveImages',upload.single('image'), async (req,res)=>{
 
 
 
-app.listen(process.env.PORT, ()=>{
+app.listen( ' https://image-shala-testing-1-66d37xqlc-shreya-jains-projects-2bce3126.vercel.app', ()=>{
     console.log(`Server running on https://image-shala-testing-1-66d37xqlc-shreya-jains-projects-2bce3126.vercel.app`);
 })
