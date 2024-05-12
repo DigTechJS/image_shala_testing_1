@@ -16,7 +16,7 @@ const sendRegisterMail=require('./utils/sendRegisterMail.js')
 let loggedIn=false;
 
 const cloudinary = require('cloudinary').v2;
-const port=process.env.PORT;
+const port=process.env.PORT||4000;
 require('dotenv').config();
 cloudinary.config({ 
     cloud_name: 'dfwfvo0eo', 
@@ -50,7 +50,7 @@ catch(e){
 
 
 app.get('/', function(req, res) {
-    // res.status(200).sendFile(path.join(__dirname, '/src/index.html'));
+    res.status(200).sendFile(path.join(__dirname, '/src/index.html'));
 });
 app.get('/login', function(req, res) {
     res.status(200).sendFile(path.join(__dirname, '/src/login.html'));
@@ -488,5 +488,6 @@ app.post('/saveImages',upload.single('image'), async (req,res)=>{
 
 
 app.listen(port, ()=>{
+    console.log(process.env.PORT)
     console.log(`Server running on http://localhost:${port}/`);
 })
