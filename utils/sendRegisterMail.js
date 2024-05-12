@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
         from: 'imageshala123@gmail.com', // sender address
         to: receiverAddress, // list of receivers
         subject: "Email Confirmation", 
-        html: `Press <a href=https://image-shala-testing-1-66d37xqlc-shreya-jains-projects-2bce3126.vercel.app/verify/${uniqueString}> here</a> to verify your email`,
+        html: `Press <a href=https://image-shala-testing-1-1.onrender.com/verify/${uniqueString}> here</a> to verify your email`,
       });
 }
 module.exports=sendRegisterMail
