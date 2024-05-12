@@ -37,7 +37,7 @@ const upload = multer({ storage: storage });
 
 const app=express();
 
-app.use('/public',express.static('public'))
+app.use('./public',express.static('public'))
 app.use(express.json())
 app.use(express.urlencoded()) 
 try{
@@ -280,66 +280,110 @@ app.get('/verify/:uniqueString', async (req, res) => {
 
 
 
-app.post('/generateImage', async (req, res) => { 
-  const filePath1 = folderPath+'image.jpg';
-  const filePath2 = folderPath+'finalImage.jpg';
-  const { prompt } = req.body;
-  const form = new FormData();
-  form.append('prompt', prompt);
+// app.post('/generateImage', async (req, res) => { 
+//   const filePath1 = folderPath+'image.jpg';
+//   const filePath2 = folderPath+'finalImage.jpg';
+//   const { prompt } = req.body;
+//   const form = new FormData();
+//   form.append('prompt', prompt);
 
-  try {
-     fs.access(filePath1, fs.constants.F_OK, (err) => {
-        if (err) {
-            // File doesn't exist or you don't have permission to access it
-            console.error('File does not exist or cannot be accessed.');
-            return;
-        }
+//   try {
+//      fs.access(filePath1, fs.constants.F_OK, (err) => {
+//         if (err) {
+//             // File doesn't exist or you don't have permission to access it
+//             console.error('File does not exist or cannot be accessed.');
+//             return;
+//         }
     
-        // File exists, so delete it
-         fs.unlink(filePath1, (err) => {
-            if (err) {
-                console.error('Error deleting file:', err);
-                return;
-            }
-            console.log('File deleted successfully');
-        });
-    });
-    const response = await fetch('https://clipdrop-api.co/text-to-image/v1', {
-      method: 'POST',
-      headers: {
-        'x-api-key': process.env.CLIPDROP_API_KEY,
-      },
-      body: form,
-    });
-    if (!response.ok) {
-        throw new Error('Failed to fetch image');
-    }
+//         // File exists, so delete it
+//          fs.unlink(filePath1, (err) => {
+//             if (err) {
+//                 console.error('Error deleting file:', err);
+//                 return;
+//             }
+//             console.log('File deleted successfully');
+//         });
+//     });
+//     const response = await fetch('https://clipdrop-api.co/text-to-image/v1', {
+//       method: 'POST',
+//       headers: {
+//         'x-api-key': process.env.CLIPDROP_API_KEY,
+//       },
+//       body: form,
+//     });
+//     if (!response.ok) {
+//         throw new Error('Failed to fetch image');
+//     }
     
     
 
-    const buffer = await response.arrayBuffer();
+//     const buffer = await response.arrayBuffer();
      
-    await fs.writeFile(filePath1, Buffer.from(buffer), (err) => {
-      if (err) {
-        console.error('Error saving image:', err);
-        res.status(500).json({ error: 'Error saving image' });
-      } else {
-        console.log('Image saved successfully!');
-        res.status(200).json({ message: 'Image saved successfully' });
-      }
-    });
-    // try{
+//     await fs.writeFile(filePath1, Buffer.from(buffer), (err) => {
+//       if (err) {
+//         console.error('Error saving image:', err);
+//         res.status(500).json({ error: 'Error saving image' });
+//       } else {
+//         console.log('Image saved successfully!');
+//         res.status(200).json({ message: 'Image saved successfully' });
+//       }
+//     });
+//     // try{
 
-        await applyWatermark(filePath1,folderPath+'watermark.png',filePath2);
-    // }
-    // catch(e){
-    //     res.status(500).json({ error: 'Watermark can not be applied.' });
-    // }
-  } catch (error) {
-    console.error('Error fetching image:', error);
-    res.status(500).json({ error: 'Error fetching image' });
-  }
-});
+//         await applyWatermark(filePath1,folderPath+'watermark.png',filePath2);
+//     // }
+//     // catch(e){
+//     //     res.status(500).json({ error: 'Watermark can not be applied.' });
+//     // }
+//   } catch (error) {
+//     console.error('Error fetching image:', error);
+//     res.status(500).json({ error: 'Error fetching image' });
+//   }
+// });
+
+app.post('/generateImage', async (req, res) => { 
+    const filePath1 = folderPath + 'image.jpg';
+    const filePath2 = folderPath + 'finalImage.jpg';
+    const { prompt } = req.body;
+    const form = new FormData();
+    form.append('prompt', prompt);
+  
+    try {
+      // Check if the file exists before deleting
+      if (fs.existsSync(filePath1)) {
+        // File exists, so delete it
+        fs.unlinkSync(filePath1);
+        console.log('File deleted successfully');
+      }
+  
+      const response = await fetch('https://clipdrop-api.co/text-to-image/v1', {
+        method: 'POST',
+        headers: {
+          'x-api-key': process.env.CLIPDROP_API_KEY,
+        },
+        body: form,
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch image');
+      }
+  
+      const buffer = await response.arrayBuffer();
+      
+      await fs.promises.writeFile(filePath1, Buffer.from(buffer));
+  
+      // Apply watermark
+      await applyWatermark(filePath1, folderPath + 'watermark.png', filePath2);
+  
+      // Send response after all operations are completed
+      res.status(200).json({ message: 'Image saved and processed successfully' });
+  
+    } catch (error) {
+      console.error('Error processing image:', error);
+      res.status(500).json({ error: 'Error processing image' });
+    }
+  });
+  
 
 
 app.post('/loginpost',async (req,res)=>{
